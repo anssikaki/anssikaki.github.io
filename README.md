@@ -4,6 +4,13 @@ This repository hosts a minimal AI-powered **Delivery Assistant** web app design
 
 The assistant sends user questions to an external LLM API and displays the response with a small "thinking..." animation while waiting. You can choose between multiple "voices" (Friendly, Boring Logistics Expert or Crazy Person) which control the prompt sent to the backend.
 
+
+Open `index.html` in a browser or deploy the repository with GitHub Pages. Choose a **voice** from the dropdown (Friendly, Boring Logistics Expert, or Crazy Person), type your question about your delivery, and press **Send**. The assistant will show a **thinking...** animation while waiting for a response.
+
+## Training Package
+
+A printable training guide is available in [training_package.pdf](training_package.pdf). It covers setup, usage, and tips for the Delivery Assistant.
+=======
 ## Quick start
 
 1. Clone or download this repository.
@@ -32,3 +39,4 @@ Additional tips are available in [`docs/USAGE.md`](docs/USAGE.md) and [`docs/CUS
 This project deliberately avoids frameworks to keep the source simple. The loading animation is implemented purely with CSS. The API key included in `script.js` is required for the demo endpoint and may be subject to rate limits.
 
 Pull requests with improvements to the UI or documentation are welcome!
+
