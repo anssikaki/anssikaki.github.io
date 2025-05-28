@@ -24,6 +24,10 @@ header {
     color: white;
     padding: 1rem;
     text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
 #chat-container {
@@ -62,6 +66,12 @@ header {
     border: none;
     padding: 0 1rem;
     cursor: pointer;
+}
+
+select {
+    padding: 0.25rem;
+    border-radius: 4px;
+    border: none;
 }
 
 .loading {

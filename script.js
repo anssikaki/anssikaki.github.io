@@ -1,6 +1,7 @@
 const chatContainer = document.getElementById('chat-container');
 const chatForm = document.getElementById('chat-form');
 const userInput = document.getElementById('user-input');
+const voiceSelect = document.getElementById('voice-select');
 
 function addMessage(text, className) {
     const message = document.createElement('div');
@@ -23,6 +24,13 @@ chatForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const text = userInput.value.trim();
     if (!text) return;
+    const voice = voiceSelect.value;
+    let systemPrompt = 'You are a friendly assistant. Help customers track their delivery and provide updates.';
+    if (voice === 'logistics') {
+        systemPrompt = 'You are a boring logistics expert speaking in a monotone, providing factual delivery status updates. If you lack real data, offer generic guidance.';
+    } else if (voice === 'crazy') {
+        systemPrompt = 'You are an over-the-top, crazy-sounding assistant who uses humorous and exaggerated language when explaining delivery status.';
+    }
     addMessage(text, 'user');
     userInput.value = '';
 
@@ -36,7 +44,7 @@ chatForm.addEventListener('submit', async (e) => {
                 'x-api-key': 'qQGNldzEhrEKBq8v4HRBRs2eKRgVu27h'
             },
             body: JSON.stringify({
-                system_prompt: 'You are a helpful assistant.',
+                system_prompt: systemPrompt,
                 user_input: text
             })
         });
