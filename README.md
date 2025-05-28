@@ -5,3 +5,7 @@ This repository hosts a simple **Delivery Assistant** web app compatible with Gi
 ## Usage
 
 Open `index.html` in a browser or deploy the repository with GitHub Pages. Choose a **voice** from the dropdown (Friendly, Boring Logistics Expert, or Crazy Person), type your question about your delivery, and press **Send**. The assistant will show a **thinking...** animation while waiting for a response.
+
+## Training Package
+
+A printable training guide is available in [training_package.pdf](training_package.pdf). It covers setup, usage, and tips for the Delivery Assistant.
