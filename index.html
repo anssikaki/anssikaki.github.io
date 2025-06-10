@@ -1,1 +1,29 @@
-Test page
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI News Summarizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>AI News Summarizer</h1>
+    </header>
+    <main>
+        <form id="news-form">
+            <label for="voice-select">Select voice:</label>
+            <select id="voice-select">
+                <option value="DRY">DRY</option>
+                <option value="CRAZY">CRAZY</option>
+                <option value="ENGINEER">ENGINEER</option>
+                <option value="BIZ">BIZ</option>
+            </select>
+            <button type="submit">Get Latest News</button>
+        </form>
+        <div id="loading" class="hidden">🤔 Thinking...</div>
+        <div id="response"></div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
