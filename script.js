@@ -1,4 +1,25 @@
-document.getElementById('news-form').addEventListener('submit', async (e) => {
+const form = document.getElementById('image-form');
+const input = document.getElementById('image-input');
+const preview = document.getElementById('preview');
+let imageData = '';
+let imageMime = '';
+
+input.addEventListener('change', () => {
+    const file = input.files[0];
+    if (!file) return;
+    imageMime = file.type;
+    const reader = new FileReader();
+    reader.onload = () => {
+        const result = reader.result;
+        const commaIdx = result.indexOf(',');
+        imageData = result.slice(commaIdx + 1);
+        preview.src = result;
+        preview.classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+});
+
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const voice = document.getElementById('voice-select').value;
     const loading = document.getElementById('loading');
@@ -16,13 +37,15 @@ document.getElementById('news-form').addEventListener('submit', async (e) => {
             },
             body: JSON.stringify({
                 system_prompt: 'You are a helpful assistant.',
-                user_input: `Summarize the latest tech news focusing on AI in a ${voice} voice.`
+                user_input: `Describe this image in a ${voice} voice.`,
+                image_data: imageData,
+                image_mime: imageMime
             })
         });
         const data = await res.json();
         responseEl.textContent = data.openai_response || 'No response';
     } catch (err) {
-        responseEl.textContent = 'Error fetching news.';
+        responseEl.textContent = 'Error fetching description.';
         console.error(err);
     } finally {
         loading.style.display = 'none';

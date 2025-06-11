@@ -30,6 +30,12 @@ form {
     gap: 1rem;
 }
 
+#preview {
+    max-width: 100%;
+    margin-top: 0.5rem;
+    border-radius: 4px;
+}
+
 button {
     background: #ffd700;
     color: #008000;
