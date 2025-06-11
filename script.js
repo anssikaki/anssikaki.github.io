@@ -20,34 +20,41 @@ input.addEventListener('change', () => {
 });
 
 form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const voice = document.getElementById('voice-select').value;
-    const loading = document.getElementById('loading');
-    const responseEl = document.getElementById('response');
+  e.preventDefault();
+  const voice      = document.getElementById('voice-select').value;
+  const loading    = document.getElementById('loading');
+  const responseEl = document.getElementById('response');
 
-    loading.style.display = 'block';
-    responseEl.textContent = '';
+  loading.style.display = 'block';
+  responseEl.textContent = '';
 
-    try {
-        const res = await fetch('https://anssi-openai-gateway.azurewebsites.net/api/http_trigger', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': 'qQGNldzEhrEKBq8v4HRBRs2eKRgVu27h'
-            },
-            body: JSON.stringify({
-                system_prompt: 'You are a helpful assistant.',
-                user_input: `Describe this image in a ${voice} voice.`,
-                image_data: imageData,
-                image_mime: imageMime
-            })
-        });
-        const data = await res.json();
-        responseEl.textContent = data.openai_response || 'No response';
-    } catch (err) {
-        responseEl.textContent = 'Error fetching description.';
-        console.error(err);
-    } finally {
-        loading.style.display = 'none';
+  try {
+    const res = await fetch('https://anssi-openai-gateway.azurewebsites.net/api/http_trigger', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key':    'qQGNldzEhrEKBq8v4HRBRs2eKRgVu27h'
+      },
+      body: JSON.stringify({
+        system_prompt: 'You are a helpful assistant.',
+        user_input:    `Describe this image in a ${voice} voice.`,
+        image_data:    imageData,
+        image_mime:    imageMime
+      })
+    });
+
+    if (!res.ok) {
+      // grab the raw text (could be "Unauthorized", CORS error page, etc.)
+      const errText = await res.text();
+      throw new Error(`Server returned ${res.status}: ${errText}`);
     }
+
+    const data = await res.json();
+    responseEl.textContent = data.openai_response ?? 'No response';
+  } catch (err) {
+    responseEl.textContent = `❌ ${err.message}`;
+    console.error(err);
+  } finally {
+    loading.style.display = 'none';
+  }
 });
