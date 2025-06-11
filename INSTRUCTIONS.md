@@ -1,25 +1,47 @@
   # General instructions
-  Create a public-facing, GitHub Pages-compatible AI assistant UI. 
-  Use only HTML, CSS, and JS (no frameworks or build tools)
-  Core application files: index.html, script.js, style.css
-  Layout should feel premium, friendly, and responsive. Feel free to use emojis.
-  Animate the response loading state (e.g., "thinking...").
+Create a public-facing, GitHub Pages–compatible AI assistant UI.  
+Use only HTML, CSS, and vanilla JS (no frameworks or build tools).  
+Core files: `index.html`, `style.css`, `script.js`.  
+Layout should feel premium, friendly, and responsive. Feel free to sprinkle in emojis!  
+Animate the response loading state (e.g. show “🤔 thinking…”).
 
-  # LLM endpoint instructions
-  POST user input to the following backend API:
-  - https://anssi-openai-gateway.azurewebsites.net/api/http_trigger
-  - Include `Content-Type: application/json`
-  - Include a header: `x-api-key: qQGNldzEhrEKBq8v4HRBRs2eKRgVu27h`
-    - Payload format:
-    ```json
+# Image-upload behavior
+- At the top of the chat window, include an `<input type="file" accept="image/*">`
+  or a drag-and-drop zone.
+- When the user selects or drops an image:
+  1. Show a thumbnail preview.
+  2. Store either the file’s **object URL** (via `URL.createObjectURL`) or
+     read it as base64 via `FileReader`.
+     
+ - On Send:
+  - Build a JSON body with:
+    ```jsonc
     {
-      "system_prompt": "You are a helpful assistant.",
-      "user_input": "Hello!"
+      "system_prompt": "<system prompt text>",
+      "user_input":    "<text the user typed>",
+      // one of these two:
+      "image_url":  "<object URL string>",        // if using URL
+      // or
+      "image_data": "<base64 string without header>",
+      "image_mime": "<optional MIME type, e.g. 'image/png'>"
     }
     ```
-  - Response format:
-    ```json
-    {
-      "openai_response": "Hi! How can I help you today?"
-    }
+  - POST to:
     ```
+    https://anssi-openai-gateway.azurewebsites.net/api/http_trigger
+    ```
+    • `Content-Type: application/json`  
+    • `x-api-key: 123qQGNldzEhrEKBq8v4HRBRs2eKRgVu27h`
+
+# LLM endpoint instructions
+- **URL:** `https://anssi-openai-gateway.azurewebsites.net/api/http_trigger`  
+- **Headers:**
+  - `Content-Type: application/json`
+  - `x-api-key: qQGNldzEhrEKBq8v4HRBRs2eKRgVu27h`
+- **Payload example** (with image):
+  ```json
+  {
+    "system_prompt": "You are a helpful assistant.",
+    "user_input":    "Describe this chart",
+    "image_url":     "blob:https://…/123-456"
+  }
