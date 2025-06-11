@@ -2,8 +2,18 @@
 Create a public-facing, GitHub Pages–compatible AI assistant UI.  
 Use only HTML, CSS, and vanilla JS (no frameworks or build tools).  
 Core files: `index.html`, `style.css`, `script.js`.  
-Layout should feel premium, friendly, and responsive. Feel free to sprinkle in emojis!  
+Layout should feel premium, friendly, and responsive. Feel free to sprinkle in emojis!
 Animate the response loading state (e.g. show “🤔 thinking…”).
+
+# Tone selection
+- Provide a dropdown with the following tone options:
+  - `DRY`
+  - `CRAZY`
+  - `ENGINEER`
+  - `BIZ`
+- When sending a request, set `user_input` to:
+  `"Describe this image in a <tone> voice."` where `<tone>` is the
+  selected option.
 
 # Image-upload behavior
 - At the top of the chat window, include an `<input type="file" accept="image/*">`
@@ -18,7 +28,7 @@ Animate the response loading state (e.g. show “🤔 thinking…”).
     ```jsonc
     {
       "system_prompt": "<system prompt text>",
-      "user_input":    "<text the user typed>",
+      "user_input":    "Describe this image in a <tone> voice.",
       // one of these two:
       "image_url":  "<object URL string>",        // if using URL
       // or
