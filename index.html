@@ -1,34 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Form Data Extractor</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Form Data Extractor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="container">
     <header>
-        <h1>📄 Form Data Extractor</h1>
+      <h1>📄 Form Data Extractor</h1>
+      <p>Take a photo of a form and get structured data.</p>
     </header>
-    <main>
-        <section class="card">
-            <form id="upload-form" class="upload-form">
-                <label class="file-label" for="file-input">Upload an image or PDF:</label>
-                <input type="file" id="file-input" accept="image/*,.pdf">
-                <img id="preview" class="hidden" alt="preview" />
-                <p id="pdf-info" class="hidden"></p>
-            </form>
-            <div id="loading" class="hidden">🤔 Thinking...</div>
-            <pre id="response"></pre>
-        </section>
-        <div class="action-bar">
-            <button id="submit-btn" type="submit" form="upload-form">Extract Data</button>
-            <a id="download-btn" class="hidden" href="#" download>⬇️ Download CSV</a>
-        </div>
-    </main>
-    <script src="script.js"></script>
+
+    <input type="file" id="file-input" accept="image/*" capture="environment" class="hidden">
+    <label for="file-input" id="file-label" class="primary-button">Take or Upload Photo</label>
+
+    <div id="preview-card" class="card hidden">
+      <img id="preview-img" alt="Preview">
+    </div>
+
+    <div id="loading" class="hidden">Processing...</div>
+
+    <pre id="response" class="hidden"></pre>
+
+    <div id="result-actions" class="hidden">
+      <a id="download-btn" class="primary-button" href="#" download>Download as CSV</a>
+      <button id="email-btn" class="primary-button">Send via Email</button>
+      <button id="next-btn" class="secondary-button">Start Next</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
