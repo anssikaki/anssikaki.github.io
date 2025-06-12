@@ -7,6 +7,6 @@ All processing happens client-side except for calls to the provided GPT-4o endpo
 ## Usage
 1. Open `index.html` on your phone or desktop.
 2. Tap **Upload Video** and select your screen recording.
-3. Wait while each frame is analysed. Progress is shown on screen.
-4. Read the generated step-by-step summary.
+3. The status line will show loading progress as each frame is analysed.
+4. Once complete, read the generated step-by-step summary.
 5. Tap **Start Over** to analyse another video.

@@ -93,6 +93,11 @@ header p {
 #status {
   font-size: 1.1rem;
   text-align: center;
+  white-space: pre-line;
+}
+
+.error {
+  color: #b91c1c;
 }
 
 .hidden {

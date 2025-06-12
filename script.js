@@ -16,13 +16,24 @@ videoInput.addEventListener('change', async () => {
   const file = videoInput.files[0];
   if (!file) return;
 
+  statusEl.textContent = 'Loading video...';
+  statusEl.classList.remove('hidden');
+  statusEl.classList.remove('error');
+
   const url = URL.createObjectURL(file);
   videoPlayer.src = url;
-  await new Promise(r => {
-    videoPlayer.onloadedmetadata = r;
+  videoPlayer.load();
+  await new Promise(resolve => {
+    videoPlayer.onloadedmetadata = resolve;
   });
 
-  processVideo();
+  try {
+    await processVideo();
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = 'Error processing video.';
+    statusEl.classList.add('error');
+  }
 });
 
 async function processVideo() {
@@ -41,18 +52,31 @@ async function processVideo() {
     await seek(t);
     ctx.drawImage(videoPlayer, 0, 0, canvas.width, canvas.height);
     const dataUrl = canvas.toDataURL('image/png');
-    const desc = await analyzeFrame(dataUrl);
-    descriptions.push(desc);
+    try {
+      const desc = await analyzeFrame(dataUrl);
+      descriptions.push(desc);
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = 'Error analyzing frame.';
+      statusEl.classList.add('error');
+      throw err;
+    }
   }
 
   statusEl.textContent = 'Generating summary...';
-  const summary = await summarize(descriptions);
-  summaryText.textContent = summary;
-  summaryCard.classList.remove('hidden');
-  summaryCard.classList.add('fade-in');
-
-  statusEl.classList.add('hidden');
-  uploadLabel.classList.add('hidden');
+  try {
+    const summary = await summarize(descriptions);
+    summaryText.textContent = summary;
+    summaryCard.classList.remove('hidden');
+    summaryCard.classList.add('fade-in');
+    statusEl.classList.add('hidden');
+    uploadLabel.classList.add('hidden');
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = 'Error generating summary.';
+    statusEl.classList.add('error');
+    throw err;
+  }
 }
 
 function seek(time) {
