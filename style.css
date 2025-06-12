@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background: linear-gradient(#f0f8ff, #ffffff);
+    background: linear-gradient(#e8f5e9, #fffde7);
     color: #333;
     margin: 0;
     display: flex;
@@ -10,8 +10,8 @@ body {
 }
 
 header {
-    background: #1976d2;
-    color: white;
+    background: #008000;
+    color: #fffde7;
     width: 100%;
     padding: 1rem;
     text-align: center;
@@ -20,7 +20,7 @@ header {
 main {
     flex: 1;
     width: 90%;
-    max-width: 700px;
+    max-width: 600px;
     margin-top: 2rem;
 }
 
@@ -32,34 +32,48 @@ form {
 
 #preview {
     max-width: 100%;
+    margin-top: 0.5rem;
     border-radius: 4px;
 }
 
-button, .button {
-    background: #ffca28;
-    color: #1976d2;
+button {
+    background: #ffd700;
+    color: #008000;
     padding: 0.5rem 1rem;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
-    text-decoration: none;
-    display: inline-block;
-    margin-top: 0.5rem;
 }
 
-#chart {
-    margin-top: 2rem;
+#download-btn {
+    margin-top: 1rem;
 }
 
-#tooltip {
-    position: absolute;
-    background: rgba(0,0,0,0.7);
-    color: #fff;
-    padding: 4px 8px;
+#pdf-info {
+    font-style: italic;
+    color: #555;
+}
+
+#response {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #fafff0;
+    border: 1px solid #ffd700;
     border-radius: 4px;
-    pointer-events: none;
-    font-size: 0.8rem;
+    white-space: pre-wrap;
+}
+
+#loading {
+    margin-top: 1rem;
+    display: none;
+    font-size: 1.2rem;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
 }
 
 .hidden {
