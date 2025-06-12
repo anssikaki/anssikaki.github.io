@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Form Data Extractor</title>
+  <title>Video Action Summarizer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -12,25 +12,20 @@
 <body>
   <div class="container">
     <header>
-      <h1>📄 Form Data Extractor</h1>
-      <p>Take a photo of a form and get structured data.</p>
+      <h1>🎞️ Video Action Summarizer</h1>
+      <p>Upload a short screen recording and get a step-by-step summary.</p>
     </header>
 
-    <input type="file" id="file-input" accept="image/*" capture="environment" class="hidden">
-    <label for="file-input" id="file-label" class="primary-button">Take or Upload Photo</label>
+    <input type="file" id="video-input" accept="video/*" class="hidden">
+    <label for="video-input" id="upload-label" class="primary-button">Upload Video</label>
 
-    <div id="preview-card" class="card hidden">
-      <img id="preview-img" alt="Preview">
-    </div>
+    <video id="video-player" class="hidden" playsinline></video>
 
-    <div id="loading" class="hidden">Processing...</div>
+    <div id="status" class="hidden"></div>
 
-    <pre id="response" class="hidden"></pre>
-
-    <div id="result-actions" class="hidden">
-      <a id="download-btn" class="primary-button" href="#" download>Download as CSV</a>
-      <button id="email-btn" class="primary-button">Send via Email</button>
-      <button id="next-btn" class="secondary-button">Start Next</button>
+    <div id="summary-card" class="card hidden">
+      <p id="summary-text"></p>
+      <button id="reset-btn" class="secondary-button">Start Over</button>
     </div>
   </div>
 
