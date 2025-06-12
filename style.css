@@ -46,6 +46,15 @@ button {
     font-weight: bold;
 }
 
+#download-btn {
+    margin-top: 1rem;
+}
+
+#pdf-info {
+    font-style: italic;
+    color: #555;
+}
+
 #response {
     margin-top: 1rem;
     padding: 1rem;

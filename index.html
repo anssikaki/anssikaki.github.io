@@ -3,29 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Image Describer</title>
+    <title>Form Data Extractor</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>AI Image Describer</h1>
+        <h1>📄 Form Data Extractor</h1>
     </header>
     <main>
-        <form id="image-form">
-            <label for="image-input">Upload an image:</label>
-            <input type="file" id="image-input" accept="image/*">
+        <form id="upload-form">
+            <label for="file-input">Upload an image or PDF:</label>
+            <input type="file" id="file-input" accept="image/*,.pdf">
             <img id="preview" class="hidden" alt="preview" />
-            <label for="voice-select">Select voice:</label>
-            <select id="voice-select">
-                <option value="DRY">DRY</option>
-                <option value="CRAZY">CRAZY</option>
-                <option value="ENGINEER">ENGINEER</option>
-                <option value="BIZ">BIZ</option>
-            </select>
-            <button type="submit">Describe Image</button>
+            <p id="pdf-info" class="hidden"></p>
+            <button type="submit">Extract Data</button>
         </form>
         <div id="loading" class="hidden">🤔 Thinking...</div>
         <div id="response"></div>
+        <button id="download-btn" class="hidden" type="button">⬇️ Download CSV</button>
     </main>
     <script src="script.js"></script>
 </body>
