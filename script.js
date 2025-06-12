@@ -45,7 +45,7 @@ form.addEventListener('submit', async (e) => {
       },
       body: JSON.stringify({
         system_prompt: 'You are a helpful assistant that extracts form fields and their values from the provided document. Return the result as JSON.',
-        user_input:    'Extract all form fields and their values from this document.',
+        user_input:    'Extract all form fields and their values from this document. Translate everything to english. Aim to extract as much as possible, even if you are unsure.',
         image_url:     fileDataUrl
       })
     });
