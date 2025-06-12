@@ -1,11 +1,10 @@
-# Form Data Extractor
+# Sketch2Chart
 
-This single-page web app lets you upload an image or PDF of a form and uses an LLM endpoint to extract all detected field names and values. The result is displayed on screen and, when possible, can be downloaded as a CSV file.
+This lightweight web tool turns a photo of a hand-drawn chart into an interactive D3.js visualization.
 
-## Usage
 1. Open `index.html` in a modern browser.
-2. Select an image or PDF containing form data.
-3. Click **Extract Data**.
-4. Once the AI responds, view the extracted JSON and click **Download CSV** to save the results.
+2. Upload an image of your sketch.
+3. Click **Generate Chart** to send it to the provided LLM endpoint.
+4. View the interactive chart, then save it as PNG or CSV or share via WhatsApp!
 
-All processing happens client-side except for the call to the provided endpoint.
+All processing happens client-side except for the call to the AI endpoint.

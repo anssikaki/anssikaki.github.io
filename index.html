@@ -3,25 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Data Extractor</title>
+    <title>Sketch2Chart</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
     <header>
-        <h1>📄 Form Data Extractor</h1>
+        <h1>📈 Sketch2Chart</h1>
     </header>
     <main>
         <form id="upload-form">
-            <label for="file-input">Upload an image or PDF:</label>
-            <input type="file" id="file-input" accept="image/*,.pdf">
+            <label for="file-input">Upload a photo of your hand-drawn graph:</label>
+            <input type="file" id="file-input" accept="image/*" required>
             <img id="preview" class="hidden" alt="preview" />
-            <p id="pdf-info" class="hidden"></p>
-            <button type="submit">Extract Data</button>
+            <button type="submit">Generate Chart</button>
         </form>
-        <div id="loading" class="hidden">🤔 Thinking...</div>
-        <div id="response"></div>
-        <button id="download-btn" class="hidden" type="button">⬇️ Download CSV</button>
+        <div id="loading" class="hidden">🤖 Analyzing...</div>
+        <div id="chart"></div>
+        <div id="controls" class="hidden">
+            <a id="png-btn" class="button" download="chart.png">Save as PNG</a>
+            <a id="csv-btn" class="button" download="chart.csv">Export CSV</a>
+            <a id="wa-share" class="button" target="_blank">Share via WhatsApp</a>
+        </div>
     </main>
+    <div id="tooltip" class="hidden"></div>
     <script src="script.js"></script>
 </body>
 </html>
