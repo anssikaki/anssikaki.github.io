@@ -1,34 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Video Action Summarizer</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Form Data Extractor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
     <header>
-      <h1>🎞️ Video Action Summarizer</h1>
-      <p>Upload a short screen recording and get a step-by-step summary.</p>
+        <h1>📄 Form Data Extractor</h1>
     </header>
-
-    <input type="file" id="video-input" accept="video/*" class="hidden">
-    <label for="video-input" id="upload-label" class="primary-button">Upload Video</label>
-
-    <video id="video-player" class="hidden" playsinline></video>
-
-    <div id="status" class="hidden"></div>
-
-    <div id="summary-card" class="card hidden">
-      <p id="summary-text"></p>
-      <button id="reset-btn" class="secondary-button">Start Over</button>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
+    <main>
+        <section class="card">
+            <form id="upload-form" class="upload-form">
+                <label class="file-label" for="file-input">Upload an image or PDF:</label>
+                <input type="file" id="file-input" accept="image/*,.pdf">
+                <img id="preview" class="hidden" alt="preview" />
+                <p id="pdf-info" class="hidden"></p>
+            </form>
+            <div id="loading" class="hidden">🤔 Thinking...</div>
+            <pre id="response"></pre>
+        </section>
+        <div class="action-bar">
+            <button id="submit-btn" type="submit" form="upload-form">Extract Data</button>
+            <a id="download-btn" class="hidden" href="#" download>⬇️ Download CSV</a>
+        </div>
+    </main>
+    <script src="script.js"></script>
 </body>
 </html>

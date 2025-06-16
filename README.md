@@ -1,12 +1,11 @@
-# Video Action Summarizer
+# Form Data Extractor
 
-This web app lets you upload a short screen recording (up to 30 seconds) and returns a concise summary of the actions shown in the video.
-
-All processing happens client-side except for calls to the provided GPT-4o endpoint.
+This single-page web app lets you upload an image or PDF of a form and uses an LLM endpoint to extract all detected field names and values. The result is displayed on screen and, when possible, can be downloaded as a CSV file.
 
 ## Usage
-1. Open `index.html` on your phone or desktop.
-2. Tap **Upload Video** and select your screen recording.
-3. The status line will show loading progress as each frame is analysed.
-4. Once complete, read the generated step-by-step summary.
-5. Tap **Start Over** to analyse another video.
+1. Open `index.html` in a modern browser.
+2. Select an image or PDF containing form data.
+3. Click **Extract Data**.
+4. Once the AI responds, view the extracted JSON and click **Download CSV** to save the results.
+
+All processing happens client-side except for the call to the provided endpoint.

@@ -1,127 +1,81 @@
-const videoInput   = document.getElementById('video-input');
-const uploadLabel  = document.getElementById('upload-label');
-const videoPlayer  = document.getElementById('video-player');
-const statusEl     = document.getElementById('status');
-const summaryCard  = document.getElementById('summary-card');
-const summaryText  = document.getElementById('summary-text');
-const resetBtn     = document.getElementById('reset-btn');
+const form       = document.getElementById('upload-form');
+const input      = document.getElementById('file-input');
+const preview    = document.getElementById('preview');
+const pdfInfo    = document.getElementById('pdf-info');
+const downloadBtn= document.getElementById('download-btn');
+let fileDataUrl  = '';
 
-const ENDPOINT = 'https://anssi-openai-gateway.azurewebsites.net/api/http_trigger';
-const HEADERS = {
-  'Content-Type': 'application/json',
-  'x-api-key': 'qQGNldzEhrEKBq8v4HRBRs2eKRgVu27h'
-};
-
-videoInput.addEventListener('change', async () => {
-  const file = videoInput.files[0];
+input.addEventListener('change', () => {
+  const file = input.files[0];
   if (!file) return;
 
-  statusEl.textContent = 'Loading video...';
-  statusEl.classList.remove('hidden');
-  statusEl.classList.remove('error');
+  const reader = new FileReader();
+  reader.onload = () => {
+    fileDataUrl = reader.result;
 
-  const url = URL.createObjectURL(file);
-  videoPlayer.src = url;
-  videoPlayer.load();
-  await new Promise(resolve => {
-    videoPlayer.onloadedmetadata = resolve;
-  });
-
-  try {
-    await processVideo();
-  } catch (err) {
-    console.error(err);
-    statusEl.textContent = 'Error processing video.';
-    statusEl.classList.add('error');
-  }
+    if (file.type === 'application/pdf') {
+      preview.classList.add('hidden');
+      pdfInfo.textContent = `Selected PDF: ${file.name}`;
+      pdfInfo.classList.remove('hidden');
+    } else {
+      preview.src = fileDataUrl;
+      preview.classList.remove('hidden');
+      pdfInfo.classList.add('hidden');
+    }
+  };
+  reader.readAsDataURL(file);
 });
 
-async function processVideo() {
-  const duration = Math.min(videoPlayer.duration, 30);
-  const frameCount = Math.floor(duration);
-  const canvas = document.createElement('canvas');
-  canvas.width = videoPlayer.videoWidth;
-  canvas.height = videoPlayer.videoHeight;
-  const ctx = canvas.getContext('2d');
-  const descriptions = [];
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const loading    = document.getElementById('loading');
+  const responseEl = document.getElementById('response');
 
-  statusEl.classList.remove('hidden');
+  loading.style.display = 'block';
+  responseEl.textContent = '';
 
-  for (let t = 0; t < frameCount; t++) {
-    statusEl.textContent = `Analyzing frame ${t + 1} of ${frameCount}...`;
-    await seek(t);
-    ctx.drawImage(videoPlayer, 0, 0, canvas.width, canvas.height);
-    const dataUrl = canvas.toDataURL('image/png');
-    try {
-      const desc = await analyzeFrame(dataUrl);
-      descriptions.push(desc);
-    } catch (err) {
-      console.error(err);
-      statusEl.textContent = 'Error analyzing frame.';
-      statusEl.classList.add('error');
-      throw err;
-    }
-  }
+  downloadBtn.classList.add('hidden');
 
-  statusEl.textContent = 'Generating summary...';
   try {
-    const summary = await summarize(descriptions);
-    summaryText.textContent = summary;
-    summaryCard.classList.remove('hidden');
-    summaryCard.classList.add('fade-in');
-    statusEl.classList.add('hidden');
-    uploadLabel.classList.add('hidden');
+    const res = await fetch('https://anssi-openai-gateway.azurewebsites.net/api/http_trigger', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key':    'qQGNldzEhrEKBq8v4HRBRs2eKRgVu27h'
+      },
+      body: JSON.stringify({
+        system_prompt: 'You are a helpful assistant that extracts form fields and their values from the provided document. Return the result as JSON.',
+        user_input:    'Extract all form fields and their values from this document. Translate everything to english. Aim to extract as much as possible, even if you are unsure.',
+        image_url:     fileDataUrl
+      })
+    });
+
+    if (!res.ok) {
+      // grab the raw text (could be "Unauthorized", CORS error page, etc.)
+      const errText = await res.text();
+      throw new Error(`Server returned ${res.status}: ${errText}`);
+    }
+
+    const data = await res.json();
+    let output = data.openai_response ?? 'No response';
+    let csv    = '';
+
+    try {
+      const obj = JSON.parse(output);
+      output = JSON.stringify(obj, null, 2);
+      const rows = Object.entries(obj).map(([k, v]) => `${k},${v}`);
+      csv = ['Field,Value', ...rows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      downloadBtn.href = URL.createObjectURL(blob);
+      downloadBtn.download = 'form-data.csv';
+      downloadBtn.classList.remove('hidden');
+    } catch { /* not JSON, skip CSV generation */ }
+
+    responseEl.textContent = output;
   } catch (err) {
+    responseEl.textContent = `❌ ${err.message}`;
     console.error(err);
-    statusEl.textContent = 'Error generating summary.';
-    statusEl.classList.add('error');
-    throw err;
+  } finally {
+    loading.style.display = 'none';
   }
-}
-
-function seek(time) {
-  return new Promise(resolve => {
-    const handler = () => {
-      videoPlayer.removeEventListener('seeked', handler);
-      resolve();
-    };
-    videoPlayer.addEventListener('seeked', handler);
-    videoPlayer.currentTime = time;
-  });
-}
-
-async function analyzeFrame(dataUrl) {
-  const res = await fetch(ENDPOINT, {
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({
-      system_prompt: 'You are a helpful assistant.',
-      user_input: 'Describe what is happening in this app screen in one sentence.',
-      image_url: dataUrl
-    })
-  });
-  const data = await res.json();
-  return data.openai_response || '';
-}
-
-async function summarize(descriptions) {
-  const list = descriptions.map((d, i) => `${i + 1}. ${d}`).join('\n');
-  const res = await fetch(ENDPOINT, {
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({
-      system_prompt: 'You are a helpful assistant.',
-      user_input: `Summarize the user\u2019s actions across these screen descriptions in a clear, step-by-step story:\n${list}`,
-      image_url: null
-    })
-  });
-  const data = await res.json();
-  return data.openai_response || '';
-}
-
-resetBtn.addEventListener('click', () => {
-  videoInput.value = '';
-  summaryCard.classList.add('hidden');
-  uploadLabel.classList.remove('hidden');
-  summaryText.textContent = '';
 });

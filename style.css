@@ -5,110 +5,130 @@ html, body {
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  line-height: 1.6;
-  background: #f9fafb;
-  color: #111;
+  font-size: 1.1rem;
+  background: linear-gradient(#fafafa, #e9ecef);
+  color: #222;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
-.container {
+header {
   width: 100%;
-  max-width: 700px;
+  padding: 1rem;
+  background: #006400;
+  color: #fff;
+  text-align: center;
+  font-size: 1.8rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 480px;
   padding: 1rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 1rem;
 }
 
-header {
-  text-align: center;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 1.8rem;
-}
-
-header p {
-  margin: 0.5rem 0 0;
-  color: #555;
-  font-size: 1rem;
-}
-
-#video-input {
-  display: none;
-}
-
-.primary-button,
-.secondary-button {
-  display: block;
-  width: 100%;
-  min-height: 48px;
-  padding: 0.75rem 1rem;
-  font-size: 1.1rem;
-  border-radius: 0.5rem;
-  border: none;
-  cursor: pointer;
-  text-align: center;
-  transition: background-color 0.2s, transform 0.1s;
-}
-
-.primary-button {
-  background: #2563eb;
-  color: #fff;
-}
-
-.primary-button:hover {
-  background: #1e4fda;
-}
-
-.secondary-button {
-  background: #e5e7eb;
-  color: #111;
-}
-
-.secondary-button:hover {
-  background: #d1d5db;
-}
-
-.primary-button:active,
-.secondary-button:active {
-  transform: scale(0.97);
-}
-
 .card {
-  width: 100%;
   background: #fff;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.upload-form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-#status {
-  font-size: 1.1rem;
+.file-label {
+  font-weight: 600;
   text-align: center;
-  white-space: pre-line;
 }
 
-.error {
-  color: #b91c1c;
+input[type="file"] {
+  padding: 1rem;
+  border: 2px dashed #ccc;
+  border-radius: 1rem;
+  background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  display: none;
+}
+
+#preview {
+  max-width: 100%;
+  border-radius: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#pdf-info {
+  font-style: italic;
+  color: #555;
+  text-align: center;
+}
+
+#loading {
+  text-align: center;
+  font-size: 1.3rem;
+  animation: fade 1s infinite;
+}
+
+@keyframes fade {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+#response {
+  white-space: pre-wrap;
+  background: #fafff0;
+  border: 1px solid #ffd700;
+  padding: 1rem;
+  border-radius: 1rem;
+  overflow: auto;
+  font-size: 1rem;
+}
+
+.action-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(255,255,255,0.9);
+  padding: 0.5rem;
+  border-radius: 1rem 1rem 0 0;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+}
+
+button, .action-bar a {
+  display: block;
+  width: 100%;
+  font-size: 1.2rem;
+  padding: 1rem;
+  border: none;
+  border-radius: 1rem;
+  background: #ffd700;
+  color: #006400;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-decoration: none;
+  text-align: center;
+  transition: transform 0.1s;
+}
+
+button:active, .action-bar a:active {
+  transform: scale(0.97);
 }
 
 .hidden {
   display: none;
-}
-
-.fade-in {
-  animation: fadeIn 0.3s ease forwards;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: none; }
 }
