@@ -1,13 +1,20 @@
-const form       = document.getElementById('upload-form');
-const input      = document.getElementById('file-input');
-const preview    = document.getElementById('preview');
-const pdfInfo    = document.getElementById('pdf-info');
-const downloadBtn= document.getElementById('download-btn');
-let fileDataUrl  = '';
+const form        = document.getElementById('upload-form');
+const input       = document.getElementById('file-input');
+const preview     = document.getElementById('preview');
+const pdfInfo     = document.getElementById('pdf-info');
+const downloadBtn = document.getElementById('download-btn');
+const loading     = document.getElementById('loading');
+const responseEl  = document.getElementById('response');
+let fileDataUrl   = '';
 
 input.addEventListener('change', () => {
   const file = input.files[0];
-  if (!file) return;
+  if (!file) {
+    fileDataUrl = '';
+    preview.classList.add('hidden');
+    pdfInfo.classList.add('hidden');
+    return;
+  }
 
   const reader = new FileReader();
   reader.onload = () => {
@@ -28,10 +35,13 @@ input.addEventListener('change', () => {
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const loading    = document.getElementById('loading');
-  const responseEl = document.getElementById('response');
 
-  loading.style.display = 'block';
+  if (!fileDataUrl) {
+    alert('Please select a file first.');
+    return;
+  }
+
+  loading.classList.remove('hidden');
   responseEl.textContent = '';
 
   downloadBtn.classList.add('hidden');
@@ -76,6 +86,6 @@ form.addEventListener('submit', async (e) => {
     responseEl.textContent = `❌ ${err.message}`;
     console.error(err);
   } finally {
-    loading.style.display = 'none';
+    loading.classList.add('hidden');
   }
 });
