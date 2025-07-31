@@ -1,36 +1,45 @@
-let x, y;
-let vx, vy;
-let diameter = 50;
-let ballColor;
+let speedSlider, powerSlider;
 
 function setup() {
-  createCanvas(400, 400);
-  x = width / 2;
-  y = height / 2;
-  vx = random(-3, 3);
-  vy = random(-3, 3);
-  ballColor = color(255, 0, 0);
+  const canvas = createCanvas(600, 400);
+  canvas.parent('panel-container');
+  angleMode(DEGREES);
+  textFont('Courier New');
+  speedSlider = createSlider(0, 100, 50);
+  speedSlider.parent('panel-container');
+  powerSlider = createSlider(0, 100, 50);
+  powerSlider.parent('panel-container');
 }
 
 function draw() {
-  background(220);
-  fill(ballColor);
+  background(20);
+  drawFrame();
+  drawGauge(width/3, height/2, speedSlider.value(), 'Speed');
+  drawGauge(2*width/3, height/2, powerSlider.value(), 'Power');
+}
+
+function drawFrame() {
+  stroke(0,255,255);
+  noFill();
+  rect(10, 10, width-20, height-20, 15);
+}
+
+function drawGauge(x, y, val, label) {
+  push();
+  translate(x, y);
+  strokeWeight(8);
+  stroke(0, 255, 255);
+  noFill();
+  const angle = map(val, 0, 100, -135, 135);
+  arc(0, 0, 150, 150, -135, angle);
+  stroke(60);
+  arc(0, 0, 150, 150, angle, 135);
+  fill(0, 255, 255);
   noStroke();
-  ellipse(x, y, diameter);
-
-  x += vx;
-  y += vy;
-
-  let collided = false;
-  if (x - diameter/2 <= 0 || x + diameter/2 >= width) {
-    vx *= -1;
-    collided = true;
-  }
-  if (y - diameter/2 <= 0 || y + diameter/2 >= height) {
-    vy *= -1;
-    collided = true;
-  }
-  if (collided) {
-    ballColor = color(random(255), random(255), random(255));
-  }
+  textAlign(CENTER, CENTER);
+  textSize(12);
+  text(label, 0, 50);
+  textSize(24);
+  text(nf(val,3,0), 0, 0);
+  pop();
 }
