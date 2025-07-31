@@ -55,9 +55,19 @@ document.getElementById('send-button').addEventListener('click', async () => {
 });
 
 // === Mill Status Log (every 30 s) ===
+const statusHistory = [];
 async function updateStatusLog() {
-  const prompt = `For each of these mill departments—${DEPARTMENTS.join(', ')}—give me a one-sentence status update.`;
+  const recent = statusHistory.slice(-3).join('\n');
+  let prompt;
+  if (recent) {
+    prompt = `Previously you reported:\n${recent}\nProvide the next coherent one-sentence status for each of these departments: ${DEPARTMENTS.join(', ')}.`;
+  } else {
+    prompt = `For each of these mill departments—${DEPARTMENTS.join(', ')}—give me a one-sentence status update.`;
+  }
+
   const text = await openAIChat(prompt);
+  statusHistory.push(text);
+
   const ul = document.getElementById('status-log');
   ul.innerHTML = '';
   text.split('\n').forEach(line => {

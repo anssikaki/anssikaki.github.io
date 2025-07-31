@@ -4,17 +4,20 @@ let imageURL = null;
 
 const fileInput = document.getElementById('file-input');
 const preview = document.getElementById('preview');
-fileInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    imageURL = URL.createObjectURL(file);
-    preview.src = imageURL;
-    preview.style.display = 'block';
-  }
-});
+if (fileInput && preview) {
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      imageURL = URL.createObjectURL(file);
+      preview.src = imageURL;
+      preview.style.display = 'block';
+    }
+  });
+}
 
 document.getElementById('send-button').addEventListener('click', async () => {
-  const sysPrompt = document.getElementById('system-prompt').value;
+  const sysPromptEl = document.getElementById('system-prompt');
+  const sysPrompt = sysPromptEl ? sysPromptEl.value : 'You are a helpful assistant in a future mill.';
   const userInput = document.getElementById('user-input').value;
   const body = { system_prompt: sysPrompt, user_input: userInput };
   if (imageURL) body.image_url = imageURL;
@@ -34,7 +37,7 @@ document.getElementById('send-button').addEventListener('click', async () => {
     const data = await res.json();
     addMessage('Assistant: ' + (data.response || JSON.stringify(data)));
     imageURL = null;
-    preview.style.display = 'none';
+    if (preview) preview.style.display = 'none';
   } catch (err) {
     addMessage('Assistant: error retrieving response');
   }
