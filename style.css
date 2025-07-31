@@ -52,6 +52,7 @@ body {
 }
 #chat-container #messages .message {
   margin-bottom: 8px;
+  font-size: 0.85rem;
 }
 #chat-container #input-area {
   display: flex;
@@ -105,4 +106,5 @@ body {
 .timestamp {
   color: #8b949e;
   margin-right: 4px;
+  font-size: 0.75rem;
 }
