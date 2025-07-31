@@ -2,26 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Future Mill Control Panel</title>
   <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="panel-container">
+    <!-- p5.js canvas & sliders -->
     <div id="canvas-holder"></div>
     <div id="controls"></div>
+
+    <!-- Chat UI -->
     <div id="chat-container">
       <div id="messages"></div>
-      <label>
-        System prompt:
-        <input id="system-prompt" type="text" value="You are a helpful assistant in a future mill." />
-      </label>
-      <textarea id="user-input" placeholder="Type your message"></textarea>
-      <input id="file-input" type="file" accept="image/*">
-      <img id="preview" style="display:none; max-width:100px;" />
-      <button id="send-button">Send</button>
+      <div id="input-area">
+        <input id="user-input" type="text" placeholder="Type your message…" autocomplete="off" />
+        <button id="send-button">Send</button>
+      </div>
+    </div>
+
+    <!-- Mill Status Log -->
+    <div id="status-container">
+      <h2>Mill Status</h2>
+      <ul id="status-log"></ul>
+    </div>
+
+    <!-- Live Measurements -->
+    <div id="metrics-container">
+      <h2>Live Measurements</h2>
+      <ul id="metrics-list">
+        <li>Temperature: <span id="metric-temp">--</span> °C</li>
+        <li>Pressure: <span id="metric-pressure">--</span> bar</li>
+        <li>Flow Rate: <span id="metric-flow">--</span> L/s</li>
+      </ul>
     </div>
   </div>
+
   <script src="sketch.js"></script>
   <script src="chat.js"></script>
 </body>
