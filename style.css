@@ -99,4 +99,10 @@ body {
 #metrics-list li {
   margin-bottom: 6px;
   list-style: none;
+  font-size: 0.85rem;
+}
+
+.timestamp {
+  color: #8b949e;
+  margin-right: 4px;
 }

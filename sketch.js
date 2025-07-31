@@ -29,8 +29,12 @@ async function openAIChat(prompt) {
     body: JSON.stringify(body)
   });
   const data = await res.json();
-  // assume gateway returns { response: "..." }
-  return data.response?.trim() || JSON.stringify(data);
+  // gateway may return {openai_response:"..."} or {response:"..."}
+  return (
+    data.openai_response?.trim() ||
+    data.response?.trim() ||
+    JSON.stringify(data)
+  );
 }
 
 // Handle user “Send”
@@ -70,10 +74,26 @@ async function updateStatusLog() {
 
   const ul = document.getElementById('status-log');
   ul.innerHTML = '';
+  const timestamp = new Date().toLocaleString();
   text.split('\n').forEach(line => {
-    if (line.trim()) {
+    const clean = line.replace(/^\d+\.\s*/, '').trim();
+    if (clean) {
       const li = document.createElement('li');
-      li.textContent = line.replace(/^\d+\.\s*/, '');
+      const spanTime = document.createElement('span');
+      spanTime.className = 'timestamp';
+      spanTime.textContent = `[${timestamp}]`;
+
+      const match = clean.match(/\*\*(.+?)\*\*:\s*(.+)/);
+      if (match) {
+        const strong = document.createElement('strong');
+        strong.textContent = `${match[1]}:`;
+        li.appendChild(spanTime);
+        li.appendChild(strong);
+        li.appendChild(document.createTextNode(' ' + match[2]));
+      } else {
+        li.appendChild(spanTime);
+        li.appendChild(document.createTextNode(' ' + clean));
+      }
       ul.appendChild(li);
     }
   });
