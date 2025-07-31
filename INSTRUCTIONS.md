@@ -1,10 +1,4 @@
-# General instructions
-Create a public-facing, GitHub Pages–compatible UI with potential AI assistant.  
-Use only HTML, CSS, and vanilla JS (no frameworks or build tools).  
-Core files: `index.html`, `style.css`, `script.js`.  
-Layout should feel premium, friendly, and responsive. Feel free to sprinkle in emojis!
 DO NOT ALTER THIS INSTRUCTIONS.md FILE AT ALL! You can add other documentation such as README.md.
-
 
 # Technical instructions 
 
