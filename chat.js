@@ -33,6 +33,8 @@ document.getElementById('send-button').addEventListener('click', async () => {
     });
     const data = await res.json();
     addMessage('Assistant: ' + (data.response || JSON.stringify(data)));
+    imageURL = null;
+    preview.style.display = 'none';
   } catch (err) {
     addMessage('Assistant: error retrieving response');
   }
