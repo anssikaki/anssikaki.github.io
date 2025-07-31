@@ -7,17 +7,20 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="panel-container"></div>
-  <div id="chat-container">
-    <div id="messages"></div>
-    <label>
-      System prompt:
-      <input id="system-prompt" type="text" value="You are a helpful assistant in a future mill." />
-    </label>
-    <textarea id="user-input" placeholder="Type your message"></textarea>
-    <input id="file-input" type="file" accept="image/*">
-    <img id="preview" style="display:none; max-width:100px;" />
-    <button id="send-button">Send</button>
+  <div id="panel-container">
+    <div id="canvas-holder"></div>
+    <div id="controls"></div>
+    <div id="chat-container">
+      <div id="messages"></div>
+      <label>
+        System prompt:
+        <input id="system-prompt" type="text" value="You are a helpful assistant in a future mill." />
+      </label>
+      <textarea id="user-input" placeholder="Type your message"></textarea>
+      <input id="file-input" type="file" accept="image/*">
+      <img id="preview" style="display:none; max-width:100px;" />
+      <button id="send-button">Send</button>
+    </div>
   </div>
   <script src="sketch.js"></script>
   <script src="chat.js"></script>
