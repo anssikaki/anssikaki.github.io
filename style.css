@@ -1,3 +1,49 @@
-canvas {
-  border: 2px solid #333;
+body {
+  background-color: #0d1117;
+  color: #c9d1d9;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+}
+
+#panel-container {
+  margin-top: 20px;
+}
+
+#chat-container {
+  margin-top: 20px;
+  width: 80%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#messages {
+  border: 1px solid #30363d;
+  padding: 10px;
+  height: 150px;
+  overflow-y: auto;
+  background: #161b22;
+}
+
+textarea {
+  width: 100%;
+  height: 60px;
+}
+
+button {
+  background: #238636;
+  color: #fff;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2ea043;
 }
