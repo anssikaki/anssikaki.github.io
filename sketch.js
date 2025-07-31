@@ -1,58 +1,81 @@
-let speedSlider, powerSlider, torqueSlider;
+const apiURL = 'https://anssi-openai-gateway.azurewebsites.net/api/http_trigger';
+const apiKey = 'qQGNldzEhrEKBq8v4HRBRs2eKRgVu27h';
 
-function setup() {
-  const canvas = createCanvas(620, 420);
-  canvas.parent('canvas-holder');
-  angleMode(DEGREES);
-  textFont('Courier New');
-  speedSlider = createSlider(0, 100, 50);
-  speedSlider.parent('controls');
-  powerSlider = createSlider(0, 100, 50);
-  powerSlider.parent('controls');
-  torqueSlider = createSlider(0, 100, 50);
-  torqueSlider.parent('controls');
+// System prompt (was originally in the HTML input)
+const systemPrompt = 'You are a helpful assistant in a future mill.';
+
+// Departments for status updates
+const DEPARTMENTS = ['Innovations', 'R&D', 'Production', 'Maintenance', 'Logistics'];
+
+// Utility: append a message to the chat
+function addMessage(text) {
+  const div = document.createElement('div');
+  div.className = 'message';
+  div.textContent = text;
+  const msgs = document.getElementById('messages');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
 }
 
-function draw() {
-  background(20);
-  drawFrame();
-  drawGauge(width/4, height/2, speedSlider.value(), 'Speed');
-  drawGauge(width/2, height/2, powerSlider.value(), 'Power');
-  drawGauge(3*width/4, height/2, torqueSlider.value(), 'Torque');
+// Core OpenAI call
+async function openAIChat(prompt) {
+  const body = { system_prompt: systemPrompt, user_input: prompt };
+  const res = await fetch(apiURL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey
+    },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  // assume gateway returns { response: "..." }
+  return data.response?.trim() || JSON.stringify(data);
 }
 
-function drawFrame() {
-  stroke(0,255,255);
-  noFill();
-  rect(10, 10, width-20, height-20, 15);
-  stroke(0, 60);
-  for (let i = 20; i < width; i += 40) {
-    line(i, 10, i, height - 10);
+// Handle user “Send”
+document.getElementById('send-button').addEventListener('click', async () => {
+  const inputEl = document.getElementById('user-input');
+  const text = inputEl.value.trim();
+  if (!text) return;
+  addMessage('You: ' + text);
+  inputEl.value = '';
+
+  // Check for a “detail” request for one of the departments
+  const lower = text.toLowerCase();
+  const dept = DEPARTMENTS.find(d => lower.includes(d.toLowerCase()));
+  let reply;
+  if (dept && lower.includes('detail')) {
+    reply = await openAIChat(`Please provide detailed operational status for the ${dept} department.`);
+  } else {
+    reply = await openAIChat(text);
   }
-  for (let j = 20; j < height; j += 40) {
-    line(10, j, width - 10, j);
-  }
-}
 
-function drawGauge(x, y, val, label) {
-  push();
-  translate(x, y);
-  strokeWeight(8);
-  stroke(0, 255, 255);
-  noFill();
-  const angle = map(val, 0, 100, -135, 135);
-  arc(0, 0, 150, 150, -135, angle);
-  stroke(60);
-  arc(0, 0, 150, 150, angle, 135);
-  const scanA = frameCount % 360;
-  stroke(0, 200, 100, 150);
-  line(0, 0, 75 * cos(scanA), 75 * sin(scanA));
-  fill(0, 255, 255);
-  noStroke();
-  textAlign(CENTER, CENTER);
-  textSize(12);
-  text(label, 0, 50);
-  textSize(24);
-  text(nf(val,3,0), 0, 0);
-  pop();
+  addMessage('Assistant: ' + reply);
+});
+
+// === Mill Status Log (every 30 s) ===
+async function updateStatusLog() {
+  const prompt = `For each of these mill departments—${DEPARTMENTS.join(', ')}—give me a one-sentence status update.`;
+  const text = await openAIChat(prompt);
+  const ul = document.getElementById('status-log');
+  ul.innerHTML = '';
+  text.split('\n').forEach(line => {
+    if (line.trim()) {
+      const li = document.createElement('li');
+      li.textContent = line.replace(/^\d+\.\s*/, '');
+      ul.appendChild(li);
+    }
+  });
 }
+updateStatusLog();
+setInterval(updateStatusLog, 30_000);
+
+// === Live Measurements (every 1 s) ===
+function updateMetrics() {
+  document.getElementById('metric-temp').textContent     = (20 + Math.random()*15).toFixed(1);
+  document.getElementById('metric-pressure').textContent = (1 + Math.random()*2).toFixed(2);
+  document.getElementById('metric-flow').textContent     = (50 + Math.random()*100).toFixed(0);
+}
+updateMetrics();
+setInterval(updateMetrics, 1_000);
