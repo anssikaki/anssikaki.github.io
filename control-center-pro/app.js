@@ -52,8 +52,9 @@ function spark(el, arr){
 
 // Fake streaming
 async function* fakeStream(text){
-  for (let i=0;i<text.length;i+=3){
-    yield text.slice(i, i+3);
+  const str = String(text ?? '');
+  for (let i=0;i<str.length;i+=3){
+    yield str.slice(i, i+3);
     await new Promise(r=>setTimeout(r,12));
   }
 }
@@ -88,9 +89,31 @@ async function callLLM(userText, imageDataUrl){
   return res.json();
 }
 
+// Robust extraction across possible response shapes
+function extractText(resp){
+  try{
+    if (typeof resp === 'string') return resp;
+    if (!resp || typeof resp !== 'object') return JSON.stringify(resp);
+    if (resp.content && typeof resp.content === 'string') return resp.content;
+    if (resp.answer && typeof resp.answer === 'string') return resp.answer;
+    if (resp.message && typeof resp.message === 'string') return resp.message;
+    if (resp.output && typeof resp.output === 'string') return resp.output;
+    if (resp.choices && resp.choices.length){
+      const ch = resp.choices[0];
+      if (ch.message && typeof ch.message.content === 'string') return ch.message.content;
+      if (typeof ch.text === 'string') return ch.text;
+      if (ch.delta && typeof ch.delta.content === 'string') return ch.delta.content;
+    }
+    if (resp.data && typeof resp.data === 'string') return resp.data;
+    return JSON.stringify(resp);
+  } catch(e){
+    return String(resp);
+  }
+}
+
 async function sendMessage(text){
   if (!text.trim()) return;
-  const userBubble = appendMsg('user', text);
+  appendMsg('user', text);
   const asstBubble = appendMsg('assistant', '…');
 
   try {
@@ -105,7 +128,8 @@ async function sendMessage(text){
       });
     }
 
-    const { content } = await callLLM(text, imgData);
+    const resp = await callLLM(text, imgData);
+    const content = extractText(resp);
     asstBubble.textContent = '';
     for await (const chunk of fakeStream(content)){
       asstBubble.textContent += chunk;
@@ -168,7 +192,7 @@ function updateKPIs(){
   $('#kpiEmissionsVal').textContent = `${state.emissions.toFixed(0)} ppm`;
 
   spark($('#energyTrend'), state.energySeries);
-  // grade mix as stacked bars
+  // grade mix bars
   const ctx = $('#gradeMix').getContext('2d');
   const w= $('#gradeMix').width, h=$('#gradeMix').height;
   ctx.clearRect(0,0,w,h);
@@ -218,5 +242,5 @@ setInterval(()=>{
   pushIncident(sev, txt);
 }, 7000);
 
-// Wire up send button default preset for quick demo
+// Default prompt
 $('#userInput').value = 'Summarize plant status and key risks for the next 2 hours.';
