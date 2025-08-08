@@ -2,7 +2,7 @@ const apiURL = 'https://anssi-openai-gateway.azurewebsites.net/api/http_trigger'
 const apiKey = 'qQGNldzEhrEKBq8v4HRBRs2eKRgVu27h';
 
 // System prompt
-const systemPrompt = "You are Millie, a playful and imaginative AI assisting operators in a futuristic pulp mill control room. Be creative, upbeat and helpful.";
+const systemPrompt = "You are Millie, a confident and direct AI assisting operators in a futuristic pulp mill control room. Provide clear, concise answers and avoid speculation.";
 
 // Departments for status updates
 const DEPARTMENTS = ['Wood Handling', 'Pulping', 'Bleaching', 'Recovery'];
@@ -11,6 +11,23 @@ const DEPARTMENTS = ['Wood Handling', 'Pulping', 'Bleaching', 'Recovery'];
 let energyData = [40, 35, 25];
 let gradeData  = [50, 30, 20];
 let overallSeverity = 'ok';
+
+let imageURL = null;
+const imageInput = document.getElementById('image-input');
+const previewArea = document.getElementById('preview-area');
+imageInput.addEventListener('change', () => {
+  const file = imageInput.files[0];
+  if (imageURL) {
+    URL.revokeObjectURL(imageURL);
+    imageURL = null;
+  }
+  if (file) {
+    imageURL = URL.createObjectURL(file);
+    previewArea.innerHTML = `<img src="${imageURL}" alt="preview">`;
+  } else {
+    previewArea.innerHTML = '';
+  }
+});
 
 // Utility: append a message to the chat
 function addMessage(text, role = 'assistant') {
@@ -23,8 +40,9 @@ function addMessage(text, role = 'assistant') {
 }
 
 // Core OpenAI call
-async function openAIChat(prompt) {
+async function openAIChat(prompt, imageURL) {
   const body = { system_prompt: systemPrompt, user_input: prompt };
+  if (imageURL) body.image_url = imageURL;
   const res = await fetch(apiURL, {
     method: 'POST',
     headers: {
@@ -58,15 +76,26 @@ sendBtn.addEventListener('click', async () => {
   addMessage('Millie is thinking...', 'assistant');
   const thinkingMsg = document.getElementById('messages').lastChild;
   if (dept && lower.includes('detail')) {
-    reply = await openAIChat(`Please provide detailed operational status for the ${dept} department.`);
+    reply = await openAIChat(`Please provide detailed operational status for the ${dept} department.`, imageURL);
   } else {
-    reply = await openAIChat(text);
+    reply = await openAIChat(text, imageURL);
   }
   thinkingMsg.textContent = 'Millie: ' + reply;
   sendBtn.disabled = false;
+  imageInput.value = '';
+  if (imageURL) {
+    URL.revokeObjectURL(imageURL);
+    imageURL = null;
+    previewArea.innerHTML = '';
+  }
 });
 
-addMessage("Millie: Hi! I'm Millie 🤖 ready to optimize some pulp. What's on your mind?", 'assistant');
+const clearBtn = document.getElementById('clear-button');
+clearBtn.addEventListener('click', () => {
+  document.getElementById('messages').innerHTML = '';
+});
+
+addMessage("Millie: Millie here—ask your question.", 'assistant');
 
 // === Mill Status Log (every 30 s) ===
 const statusHistory = [];

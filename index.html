@@ -15,9 +15,15 @@
 
     <!-- Chat UI -->
     <div id="chat-container">
+      <div id="chat-header">
+        <h2>Millie Chat</h2>
+        <button id="clear-button">Clear</button>
+      </div>
       <div id="messages"></div>
+      <div id="preview-area"></div>
       <div id="input-area">
         <input id="user-input" type="text" placeholder="Type your message…" autocomplete="off" />
+        <input id="image-input" type="file" accept="image/*" />
         <button id="send-button">Send</button>
       </div>
     </div>
