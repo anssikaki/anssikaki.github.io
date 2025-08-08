@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Future Control Center — Pro</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🟢</span>
+      <div class="titles">
+        <h1>Future Control Center</h1>
+        <p class="subtitle">Pulp Mill Mock-Up • Operator View</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="clock"><span id="clock"></span></div>
+      <div class="shift">
+        <label>Shift</label>
+        <select id="shiftSelect">
+          <option>Day</option>
+          <option>Evening</option>
+          <option>Night</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="kpis card">
+      <div class="card-title">Live KPIs</div>
+      <div class="kpi-grid">
+        <div class="kpi">
+          <canvas id="kpiEnergy" width="140" height="140" aria-label="Energy Load"></canvas>
+          <div class="kpi-meta"><div>Energy Load</div><b id="kpiEnergyVal">0 MW</b></div>
+        </div>
+        <div class="kpi">
+          <canvas id="kpiSteam" width="140" height="140" aria-label="Steam Balance"></canvas>
+          <div class="kpi-meta"><div>Steam Balance</div><b id="kpiSteamVal">0 t/h</b></div>
+        </div>
+        <div class="kpi">
+          <canvas id="kpiYield" width="140" height="140" aria-label="Fiber Yield"></canvas>
+          <div class="kpi-meta"><div>Fiber Yield</div><b id="kpiYieldVal">0 %</b></div>
+        </div>
+        <div class="kpi">
+          <canvas id="kpiEmissions" width="140" height="140" aria-label="Emissions"></canvas>
+          <div class="kpi-meta"><div>Emissions</div><b id="kpiEmissionsVal">0 ppm</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="charts card">
+      <div class="card-title">Production & Quality</div>
+      <div class="chart-grid">
+        <div class="chart">
+          <canvas id="energyTrend" width="520" height="220" aria-label="Energy Trend"></canvas>
+          <div class="chart-caption">Energy (MW) — last 2 hours</div>
+        </div>
+        <div class="chart">
+          <canvas id="gradeMix" width="520" height="220" aria-label="Grade Mix"></canvas>
+          <div class="chart-caption">Grade Mix — current</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="departments card">
+      <div class="card-title">Area Status</div>
+      <div class="dept-grid" id="deptGrid"></div>
+    </section>
+
+    <section class="assistant card">
+      <div class="card-title">Millie — Control Assistant</div>
+      <div class="assistant-layout">
+        <div class="chat" id="chatLog" aria-live="polite"></div>
+        <aside class="composer">
+          <div class="presets">
+            <button data-prompt="Summarize plant status and key risks for the next 2 hours.">Status Summary</button>
+            <button data-prompt="What actions reduce steam bottlenecks without hurting yield?">Steam Bottleneck</button>
+            <button data-prompt="Create a safe startup checklist for the recovery boiler after maintenance.">Startup Checklist</button>
+            <button data-prompt="Explain the impact of white liquor strength drifting low.">White Liquor Low</button>
+          </div>
+          <textarea id="userInput" rows="3" placeholder="Ask Millie… (shift handover, incident review, optimization tips)"></textarea>
+          <div class="composer-actions">
+            <label class="file">
+              <input id="imageInput" type="file" accept="image/*" />
+              Attach image
+            </label>
+            <button id="sendBtn">Send</button>
+          </div>
+          <div class="hint">Uses the same Azure endpoint defined in the original demo.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="incidents card">
+      <div class="card-title">Incidents & Alarms</div>
+      <ul id="incidentList" class="incident-list"></ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Demo UI — static files. No backend changes.</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
