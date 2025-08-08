@@ -98,6 +98,7 @@ function extractText(resp){
     if (resp.answer && typeof resp.answer === 'string') return resp.answer;
     if (resp.message && typeof resp.message === 'string') return resp.message;
     if (resp.output && typeof resp.output === 'string') return resp.output;
+    if (resp.openai_response && typeof resp.openai_response === 'string') return resp.openai_response;
     if (resp.choices && resp.choices.length){
       const ch = resp.choices[0];
       if (ch.message && typeof ch.message.content === 'string') return ch.message.content;
