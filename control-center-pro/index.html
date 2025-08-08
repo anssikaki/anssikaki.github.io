@@ -105,5 +105,31 @@
   </footer>
 
   <script src="app.js"></script>
+
+  <!-- Alarm Ask Modal -->
+  <div id="alarmModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="alarmTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <div class="badge sev2" id="alarmSev">S2</div>
+          <h3 id="alarmTitle">Ask about alarm</h3>
+        </div>
+        <button class="modal-close" id="alarmClose" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="alarm-text" id="alarmText"></div>
+        <div class="quick-qs">
+          <button class="qq" data-q="What is the likely root cause and how can we confirm it quickly?">Root cause</button>
+          <button class="qq" data-q="What immediate actions should the operator take to stabilize the situation?">Immediate actions</button>
+          <button class="qq" data-q="What is the expected impact on quality and production over the next 2 hours?">Impact</button>
+        </div>
+        <textarea id="alarmInput" rows="3" placeholder="Ask Millie about this alarm… (Ctrl/Cmd+Enter to send)"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button id="alarmSend" class="primary">Ask Millie</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
