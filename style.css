@@ -54,6 +54,12 @@ body {
   margin-bottom: 8px;
   font-size: 0.85rem;
 }
+#chat-container #messages .message.user {
+  color: #58a6ff;
+}
+#chat-container #messages .message.assistant {
+  color: #ffa657;
+}
 #chat-container #input-area {
   display: flex;
   border-top: 1px solid #30363d;
@@ -108,3 +114,21 @@ body {
   margin-right: 4px;
   font-size: 0.75rem;
 }
+
+.status-ok,
+.status-warn,
+.status-bad {
+  position: relative;
+  padding-left: 16px;
+}
+.status-ok::before,
+.status-warn::before,
+.status-bad::before {
+  content: '●';
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.status-ok::before { color: #238636; }
+.status-warn::before { color: #f9c513; }
+.status-bad::before { color: #da3633; }
