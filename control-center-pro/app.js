@@ -224,7 +224,10 @@ const incidentList = $('#incidentList');
 function pushIncident(sev, text){
   const li = document.createElement('li');
   li.className = 'incident';
+  li.setAttribute('data-sev', String(sev));
+  li.setAttribute('data-text', text);
   li.innerHTML = `<span class="sev sev${sev}">S${sev}</span><div class="text">${text}</div>`;
+  li.addEventListener('click', ()=> openAlarmModal(sev, text));
   incidentList.prepend(li);
   while(incidentList.children.length > 8) incidentList.removeChild(incidentList.lastChild);
 }
@@ -245,3 +248,43 @@ setInterval(()=>{
 
 // Default prompt
 $('#userInput').value = 'Summarize plant status and key risks for the next 2 hours.';
+
+
+// --- Alarm modal logic ---
+const alarmModal = document.getElementById('alarmModal');
+const alarmTitle = document.getElementById('alarmTitle');
+const alarmText = document.getElementById('alarmText');
+const alarmInput = document.getElementById('alarmInput');
+const alarmSev = document.getElementById('alarmSev');
+
+function openAlarmModal(sev, text){
+  alarmSev.className = 'badge sev' + sev;
+  alarmSev.textContent = 'S' + sev;
+  alarmTitle.textContent = 'Ask about alarm';
+  alarmText.textContent = text;
+  alarmInput.value = '';
+  alarmModal.classList.remove('hidden');
+  alarmInput.focus();
+}
+function closeAlarmModal(){
+  alarmModal.classList.add('hidden');
+}
+document.getElementById('alarmClose')?.addEventListener('click', closeAlarmModal);
+alarmModal?.addEventListener('click', (e)=>{ if(e.target===alarmModal) closeAlarmModal(); });
+document.getElementById('alarmSend')?.addEventListener('click', ()=>{
+  const q = alarmInput.value.trim() || 'Provide a short operator briefing.';
+  const augmented = `You are Millie, the pulp mill control assistant. An alarm was triggered: "${alarmText.textContent}". The user asks: "${q}". For this demo, invent plausible operational details (clearly illustrative), give likely root causes, immediate actions, and near-term impact. Use bullet points and be concise.`;
+  sendMessage(augmented);
+  closeAlarmModal();
+});
+alarmInput?.addEventListener('keydown', (e)=>{
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter'){
+    document.getElementById('alarmSend').click();
+  }
+});
+document.querySelectorAll('.quick-qs .qq').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    alarmInput.value = btn.dataset.q;
+    alarmInput.focus();
+  });
+});
