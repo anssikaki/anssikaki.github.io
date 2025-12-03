@@ -5,7 +5,7 @@ const apiKey = 'qQGNldzEhrEKBq8v4HRBRs2eKRgVu27h';
 const systemPrompt = "You are Millie, a confident and direct AI assisting operators in a futuristic pulp mill control room. Provide clear, concise answers and avoid speculation.";
 
 // Departments for status updates
-const DEPARTMENTS = ['Wood Handling', 'Pulping', 'Bleaching', 'Recovery'];
+const DEPARTMENTS = ['Wood Handling', 'Pulping', 'Bleaching', 'Recovery', 'Water Purification'];
 
 // Visual data for charts
 let energyData = [40, 35, 25];
@@ -15,6 +15,7 @@ let overallSeverity = 'ok';
 let imageURL = null;
 const imageInput = document.getElementById('image-input');
 const previewArea = document.getElementById('preview-area');
+const bubbleOverlay = document.getElementById('bubble-overlay');
 imageInput.addEventListener('change', () => {
   const file = imageInput.files[0];
   if (imageURL) {
@@ -39,25 +40,60 @@ function addMessage(text, role = 'assistant') {
   msgs.scrollTop = msgs.scrollHeight;
 }
 
+function triggerBubbleParty() {
+  if (!bubbleOverlay) return;
+  bubbleOverlay.innerHTML = '';
+  const bubbleCount = 22;
+  for (let i = 0; i < bubbleCount; i++) {
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    const size = 8 + Math.random() * 26;
+    bubble.style.width = `${size}px`;
+    bubble.style.height = `${size}px`;
+    bubble.style.left = `${Math.random() * 100}%`;
+    bubble.style.animationDelay = `${Math.random() * 1.4}s`;
+    bubbleOverlay.appendChild(bubble);
+  }
+  setTimeout(() => { bubbleOverlay.innerHTML = ''; }, 7000);
+}
+
+function maybeTriggerEasterEgg(lowerText) {
+  if (lowerText.includes('bubble party') || lowerText.includes('water party') || lowerText.includes('h2o fiesta')) {
+    triggerBubbleParty();
+    addMessage('Millie: Bubble scrub engaged — water purification dance mode unlocked!', 'assistant');
+    return true;
+  }
+  return false;
+}
+
 // Core OpenAI call
 async function openAIChat(prompt, imageURL) {
   const body = { system_prompt: systemPrompt, user_input: prompt };
   if (imageURL) body.image_url = imageURL;
-  const res = await fetch(apiURL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey
-    },
-    body: JSON.stringify(body)
-  });
-  const data = await res.json();
-  // gateway may return {openai_response:"..."} or {response:"..."}
-  return (
-    data.openai_response?.trim() ||
-    data.response?.trim() ||
-    JSON.stringify(data)
-  );
+  try {
+    const res = await fetch(apiURL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey
+      },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`API request failed (${res.status}): ${errText || res.statusText}`);
+    }
+    const data = await res.json();
+    // gateway may return {openai_response:"..."} or {response:"..."}
+    return (
+      data.openai_response?.trim() ||
+      data.response?.trim() ||
+      JSON.stringify(data)
+    );
+  } catch (err) {
+    console.error('Chat request failed', err);
+    throw err;
+  }
 }
 
 // Handle user “Send”
@@ -75,18 +111,25 @@ sendBtn.addEventListener('click', async () => {
   sendBtn.disabled = true;
   addMessage('Millie is thinking...', 'assistant');
   const thinkingMsg = document.getElementById('messages').lastChild;
-  if (dept && lower.includes('detail')) {
-    reply = await openAIChat(`Please provide detailed operational status for the ${dept} department.`, imageURL);
-  } else {
-    reply = await openAIChat(text, imageURL);
-  }
-  thinkingMsg.textContent = 'Millie: ' + reply;
-  sendBtn.disabled = false;
-  imageInput.value = '';
-  if (imageURL) {
-    URL.revokeObjectURL(imageURL);
-    imageURL = null;
-    previewArea.innerHTML = '';
+  maybeTriggerEasterEgg(lower);
+  try {
+    if (dept && lower.includes('detail')) {
+      reply = await openAIChat(`Please provide detailed operational status for the ${dept} department.`, imageURL);
+    } else {
+      reply = await openAIChat(text, imageURL);
+    }
+    thinkingMsg.textContent = 'Millie: ' + reply;
+  } catch (err) {
+    const friendly = err?.message || 'Request failed. Please try again soon.';
+    thinkingMsg.textContent = 'Millie: ' + friendly;
+  } finally {
+    sendBtn.disabled = false;
+    imageInput.value = '';
+    if (imageURL) {
+      URL.revokeObjectURL(imageURL);
+      imageURL = null;
+      previewArea.innerHTML = '';
+    }
   }
 });
 
@@ -180,6 +223,7 @@ function updateMetrics() {
   document.getElementById('metric-ph').textContent       = (11 + Math.random()*2).toFixed(2);
   document.getElementById('metric-energy').textContent   = (30 + Math.random()*10).toFixed(1);
   document.getElementById('metric-liquor').textContent   = (200 + Math.random()*100).toFixed(0);
+  document.getElementById('metric-water').textContent    = (0.1 + Math.random()*0.9).toFixed(2);
 
   energyData = [30 + Math.random()*20, 40 + Math.random()*20, 10 + Math.random()*20];
   gradeData  = [50 + Math.random()*20, 30 + Math.random()*10, 20 + Math.random()*10];

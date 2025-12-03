@@ -167,3 +167,25 @@ body {
 .status-ok::before { color: #238636; }
 .status-warn::before { color: #f9c513; }
 .status-bad::before { color: #da3633; }
+
+/* Easter egg bubble overlay */
+#bubble-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 999;
+}
+.bubble {
+  position: absolute;
+  bottom: -40px;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.45), rgba(0,170,255,0.35));
+  border-radius: 50%;
+  animation: rise 6.5s ease-in forwards;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 4px rgba(0,170,255,0.35));
+}
+
+@keyframes rise {
+  to { transform: translateY(-115vh) scale(1.25); opacity: 0; }
+}
