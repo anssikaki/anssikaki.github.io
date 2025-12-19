@@ -11,6 +11,7 @@ import {
 import { solveDP } from "./solvers/dp";
 import { solveGreedy } from "./solvers/greedy";
 import { windAt } from "./model/wind";
+import { computeDebugStats } from "./solvers/debug";
 
 type Route = {
   ok: boolean;
@@ -24,6 +25,7 @@ export default function App() {
   const targetCell = useMemo(() => latLonToCell(TARGET.lat, TARGET.lon), []);
   const startId = useMemo(() => encode(startCell.i, startCell.j, nx), [nx, startCell]);
   const targetId = useMemo(() => encode(targetCell.i, targetCell.j, nx), [nx, targetCell]);
+  const debug = useMemo(() => computeDebugStats(nx, ny, startId, targetId), [nx, ny, startId, targetId]);
 
   const [hour, setHour] = useState(0);
   const [showWind, setShowWind] = useState(true);
@@ -211,6 +213,31 @@ export default function App() {
               </div>
               <div style={{ marginTop: 10, opacity: 0.88 }}>
                 Green = DP optimal (earliest arrival). Orange = greedy “always get closer to Tallinn”.
+              </div>
+            </div>
+          </div>
+          <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.18)" }}>
+            <div style={{ fontWeight: 700, marginBottom: 6 }}>Debug</div>
+            <div style={{ fontSize: 13, opacity: 0.95, lineHeight: 1.45 }}>
+              <div>Reachable cells by hour: {debug.reachableCounts.join(", ")}</div>
+              <div style={{ marginTop: 8 }}>
+                Feasible moves from Helsinki cell at t=0:
+                <ul style={{ margin: "6px 0 0 18px" }}>
+                  {debug.startFeasibleMovesAtT0
+                    .filter((m) => m.feasible)
+                    .map((m) => (
+                      <li key={m.headingDeg}>
+                        heading {m.headingDeg}°, TWA {m.twaDeg.toFixed(0)}°, wind {m.windSpeedMS.toFixed(1)} m/s @ {m.windFromDeg.toFixed(0)}°,
+                        boat {m.boatKnots.toFixed(2)} kn → max {m.maxKm.toFixed(1)} km (need {m.reqKm.toFixed(1)} km)
+                      </li>
+                    ))}
+                </ul>
+                {debug.startFeasibleMovesAtT0.filter((m) => m.feasible).length === 0 && (
+                  <div style={{ marginTop: 6, color: "rgba(255,120,120,0.95)" }}>
+                    No feasible moves from the start at hour 0. This usually means the polar is too slow, the no-go zone is too strict,
+                    or the grid/time step requires more distance than the boat can cover.
+                  </div>
+                )}
               </div>
             </div>
           </div>
