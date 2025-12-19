@@ -31,7 +31,8 @@ jobs:
 
       - name: Build
         run: npm run build
-              - name: Debug dist contents
+
+      - name: Debug dist contents
         run: |
           echo "PWD=$(pwd)"
           ls -la
@@ -39,7 +40,6 @@ jobs:
           ls -la dist
           echo "---- dist/index.html (first 40 lines) ----"
           sed -n '1,40p' dist/index.html
-
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
