@@ -2,23 +2,30 @@ import { decode, encode } from "../model/geo";
 import type { Move } from "./moves";
 import { MOVES_8 } from "./moves";
 import { isMoveFeasible } from "./feasible";
+import { CELL_KM } from "../model/constants";
 
 export type RouteResult = {
   ok: boolean;
   arrivalT: number | null;
   path: { t: number; i: number; j: number }[];
+  totalKm: number;
 };
 
 export function solveDP(startId: number, targetId: number, nx: number, ny: number, tMax: number): RouteResult {
   const nCells = nx * ny;
-  const reachable: boolean[][] = Array.from({ length: tMax + 1 }, () => Array(nCells).fill(false));
+
+  // reachable[t][cell] is implied by dist[t][cell] < INF
+  const INF = 1e18;
+  const distKm: number[][] = Array.from({ length: tMax + 1 }, () => Array(nCells).fill(INF));
   const prev: number[][] = Array.from({ length: tMax + 1 }, () => Array(nCells).fill(-1));
 
-  reachable[0][startId] = true;
+  distKm[0][startId] = 0;
 
   for (let t = 0; t < tMax; t++) {
     for (let cellId = 0; cellId < nCells; cellId++) {
-      if (!reachable[t][cellId]) continue;
+      const curDist = distKm[t][cellId];
+      if (curDist >= INF) continue;
+
       const { i, j } = decode(cellId, nx);
 
       for (const mv of MOVES_8 as Move[]) {
@@ -29,22 +36,27 @@ export function solveDP(startId: number, targetId: number, nx: number, ny: numbe
         if (!isMoveFeasible(t, i, j, mv, nx, ny)) continue;
 
         const nid = encode(ni, nj, nx);
-        if (!reachable[t + 1][nid]) {
-          reachable[t + 1][nid] = true;
+        const stepKm = mv.isDiagonal ? CELL_KM * Math.SQRT2 : CELL_KM;
+        const cand = curDist + stepKm;
+
+        // same arrival hour (t+1) but choose the shorter sailed distance path
+        if (cand < distKm[t + 1][nid]) {
+          distKm[t + 1][nid] = cand;
           prev[t + 1][nid] = cellId;
         }
       }
     }
   }
 
+  // earliest arrival time
   let arrivalT: number | null = null;
   for (let t = 0; t <= tMax; t++) {
-    if (reachable[t][targetId]) {
+    if (distKm[t][targetId] < INF) {
       arrivalT = t;
       break;
     }
   }
-  if (arrivalT === null) return { ok: false, arrivalT: null, path: [] };
+  if (arrivalT === null) return { ok: false, arrivalT: null, path: [], totalKm: 0 };
 
   // reconstruct
   const path: { t: number; i: number; j: number }[] = [];
@@ -58,5 +70,5 @@ export function solveDP(startId: number, targetId: number, nx: number, ny: numbe
   }
   path.reverse();
 
-  return { ok: true, arrivalT, path };
+  return { ok: true, arrivalT, path, totalKm: distKm[arrivalT][targetId] };
 }
