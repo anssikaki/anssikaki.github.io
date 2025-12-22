@@ -8,6 +8,6 @@ export const LON_MAX = 25.20;
 
 export const CELL_KM = 5;         // 5 km x 5 km
 export const DT_HOURS = 1;        // hourly steps
-export const T_MAX = 15;          // 0..15
+export const T_MAX = 50;          // 0..15
 
 export const NO_GO_TWA_DEG = 35;  // unsailable if < 35°

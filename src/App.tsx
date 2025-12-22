@@ -23,9 +23,19 @@ export default function App() {
   const { nx, ny } = useMemo(() => gridSize(), []);
   const startCell = useMemo(() => latLonToCell(START.lat, START.lon), []);
   const targetCell = useMemo(() => latLonToCell(TARGET.lat, TARGET.lon), []);
-  const startId = useMemo(() => encode(startCell.i, startCell.j, nx), [nx, startCell]);
-  const targetId = useMemo(() => encode(targetCell.i, targetCell.j, nx), [nx, targetCell]);
-  const debug = useMemo(() => computeDebugStats(nx, ny, startId, targetId), [nx, ny, startId, targetId]);
+  const startId = useMemo(
+    () => encode(startCell.i, startCell.j, nx),
+    [nx, startCell.i, startCell.j]
+  );
+  const targetId = useMemo(
+    () => encode(targetCell.i, targetCell.j, nx),
+    [nx, targetCell.i, targetCell.j]
+  );
+
+  const debug = useMemo(
+    () => computeDebugStats(nx, ny, startId, targetId),
+    [nx, ny, startId, targetId]
+  );
 
   const [hour, setHour] = useState(0);
   const [showWind, setShowWind] = useState(true);
@@ -35,7 +45,6 @@ export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const run = () => {
-    // compute and store results; drawing happens via useEffect below
     setDp(solveDP(startId, targetId, nx, ny, T_MAX));
     setGreedy(solveGreedy(startId, targetId, nx, ny, T_MAX));
   };
@@ -105,9 +114,9 @@ export default function App() {
       }
     }
 
-    // helper: draw route
+    // helper: draw route (draw partial path too, even if ok=false)
     const drawRoute = (route: Route | null, stroke: string) => {
-      if (!route?.ok || route.path.length < 2) return;
+      if (!route || route.path.length < 2) return;
       ctx.strokeStyle = stroke;
       ctx.lineWidth = 3;
       ctx.beginPath();
@@ -122,7 +131,7 @@ export default function App() {
     };
 
     drawRoute(greedy, "rgba(255,180,80,0.95)"); // orange
-    drawRoute(dp, "rgba(120,240,140,0.95)");     // green
+    drawRoute(dp, "rgba(120,240,140,0.95)"); // green
 
     // markers
     const mark = (i: number, j: number, fill: string, label: string) => {
@@ -146,34 +155,82 @@ export default function App() {
     ctx.fillStyle = "rgba(255,255,255,0.95)";
     ctx.font = "14px system-ui, sans-serif";
     ctx.fillText(`Grid: ${nx} x ${ny} (5km) | Hour: ${hour}`, 20, 22);
-  }, [nx, ny, hour, showWind, dp, greedy, startCell.i, startCell.j, targetCell.i, targetCell.j]);
+  }, [
+    nx,
+    ny,
+    hour,
+    showWind,
+    dp,
+    greedy,
+    startCell.i,
+    startCell.j,
+    targetCell.i,
+    targetCell.j,
+  ]);
 
   // small helper metrics
   const dpMsg = dp ? (dp.ok ? `arrives in ${dp.arrivalT}h` : "not reached") : "—";
-  const grMsg = greedy ? (greedy.ok ? `arrives in ${greedy.arrivalT}h` : "not reached") : "—";
+  const grMsg = greedy
+    ? greedy.ok
+      ? `arrives in ${greedy.arrivalT}h`
+      : "not reached"
+    : "—";
 
-  // optional: show straight-line distance for user intuition
+  // intuition metric
   const startLL = cellCenterLatLon(startCell.i, startCell.j);
   const targetLL = cellCenterLatLon(targetCell.i, targetCell.j);
   const approxKm = distKm(startLL, targetLL);
 
   return (
-    <div style={{ padding: 16, fontFamily: "system-ui, sans-serif", color: "rgba(255,255,255,0.95)" }}>
-      <h2 style={{ margin: "8px 0", color: "rgba(255,255,255,0.97)" }}>Dynamic Sailing Routing (DP vs Greedy)</h2>
+    <div
+      style={{
+        padding: 16,
+        fontFamily: "system-ui, sans-serif",
+        color: "rgba(255,255,255,0.95)",
+      }}
+    >
+      <h2 style={{ margin: "8px 0", color: "rgba(255,255,255,0.97)" }}>
+        Dynamic Sailing Routing (DP vs Greedy)
+      </h2>
 
-      <div style={{ display: "flex", gap: 18, alignItems: "flex-start", flexWrap: "wrap" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: 18,
+          alignItems: "flex-start",
+          flexWrap: "wrap",
+        }}
+      >
         <div>
           <canvas
             ref={canvasRef}
             width={canvasW}
             height={canvasH}
-            style={{ borderRadius: 12, border: "1px solid rgba(255,255,255,0.18)" }}
+            style={{
+              borderRadius: 12,
+              border: "1px solid rgba(255,255,255,0.18)",
+            }}
           />
         </div>
 
-        <div style={{ minWidth: 320, maxWidth: 420 }}>
-          <div style={{ padding: 14, borderRadius: 12, border: "1px solid rgba(255,255,255,0.18)", background: "rgba(0,0,0,0.25)" }}>
-            <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 12 }}>
+        <div style={{ minWidth: 320, maxWidth: 440 }}>
+          {/* Main panel */}
+          <div
+            style={{
+              padding: 14,
+              borderRadius: 12,
+              border: "1px solid rgba(255,255,255,0.18)",
+              background: "rgba(0,0,0,0.30)",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                alignItems: "center",
+                marginBottom: 12,
+              }}
+            >
               <button
                 onClick={run}
                 style={{
@@ -188,7 +245,11 @@ export default function App() {
               </button>
 
               <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                <input type="checkbox" checked={showWind} onChange={(e) => setShowWind(e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={showWind}
+                  onChange={(e) => setShowWind(e.target.checked)}
+                />
                 Show wind
               </label>
             </div>
@@ -206,44 +267,71 @@ export default function App() {
             </div>
 
             <div style={{ marginTop: 10, lineHeight: 1.55 }}>
-              <div><b>Optimal (DP):</b> {dpMsg}</div>
-              <div><b>Greedy baseline:</b> {grMsg}</div>
+              <div>
+                <b>Optimal (DP):</b> {dpMsg}
+              </div>
+              <div>
+                <b>Greedy baseline:</b> {grMsg}
+              </div>
               <div style={{ marginTop: 10, opacity: 0.9 }}>
                 Straight-line distance (approx): <b>{approxKm.toFixed(1)} km</b>
               </div>
               <div style={{ marginTop: 10, opacity: 0.88 }}>
-                Green = DP optimal (earliest arrival). Orange = greedy “always get closer to Tallinn”.
+                Green = DP optimal (earliest arrival). Orange = greedy “always get
+                closer to Tallinn”.
               </div>
             </div>
-          </div>
-          <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.18)" }}>
-            <div style={{ fontWeight: 700, marginBottom: 6 }}>Debug</div>
-            <div style={{ fontSize: 13, opacity: 0.95, lineHeight: 1.45 }}>
-              <div>Reachable cells by hour: {debug.reachableCounts.join(", ")}</div>
-              <div style={{ marginTop: 8 }}>
-                Feasible moves from Helsinki cell at t=0:
-                <ul style={{ margin: "6px 0 0 18px" }}>
-                  {debug.startFeasibleMovesAtT0
-                    .filter((m) => m.feasible)
-                    .map((m) => (
-                      <li key={m.headingDeg}>
-                        heading {m.headingDeg}°, TWA {m.twaDeg.toFixed(0)}°, wind {m.windSpeedMS.toFixed(1)} m/s @ {m.windFromDeg.toFixed(0)}°,
-                        boat {m.boatKnots.toFixed(2)} kn → max {m.maxKm.toFixed(1)} km (need {m.reqKm.toFixed(1)} km)
-                      </li>
-                    ))}
-                </ul>
-                {debug.startFeasibleMovesAtT0.filter((m) => m.feasible).length === 0 && (
-                  <div style={{ marginTop: 6, color: "rgba(255,120,120,0.95)" }}>
-                    No feasible moves from the start at hour 0. This usually means the polar is too slow, the no-go zone is too strict,
-                    or the grid/time step requires more distance than the boat can cover.
-                  </div>
-                )}
+
+            {/* Debug panel (inside the card so you can't miss it) */}
+            <div
+              style={{
+                marginTop: 14,
+                padding: 12,
+                borderRadius: 10,
+                background: "rgba(255,255,255,0.07)",
+                border: "1px solid rgba(255,255,255,0.10)",
+              }}
+            >
+              <div style={{ fontWeight: 800, marginBottom: 6 }}>Debug</div>
+
+              <div style={{ fontSize: 13, opacity: 0.98, lineHeight: 1.45 }}>
+                <div>
+                  Reachable cells by hour (DP frontier size):{" "}
+                  {debug.reachableCounts.join(", ")}
+                </div>
+
+                <div style={{ marginTop: 8 }}>
+                  Feasible moves from Helsinki cell at t=0:
+                  <ul style={{ margin: "6px 0 0 18px" }}>
+                    {debug.startFeasibleMovesAtT0
+                      .filter((m) => m.feasible)
+                      .map((m) => (
+                        <li key={m.headingDeg}>
+                          heading {m.headingDeg}°, TWA {m.twaDeg.toFixed(0)}°, wind{" "}
+                          {m.windSpeedMS.toFixed(1)} m/s @{" "}
+                          {m.windFromDeg.toFixed(0)}°, boat{" "}
+                          {m.boatKnots.toFixed(2)} kn → max{" "}
+                          {m.maxKm.toFixed(1)} km (need {m.reqKm.toFixed(1)} km)
+                        </li>
+                      ))}
+                  </ul>
+
+                  {debug.startFeasibleMovesAtT0.filter((m) => m.feasible).length ===
+                    0 && (
+                    <div style={{ marginTop: 6, color: "rgba(255,140,140,0.98)" }}>
+                      No feasible moves from the start at hour 0. This usually means
+                      the polar is too slow, the no-go zone is too strict, or the
+                      grid/time step requires more distance than the boat can cover.
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
           <div style={{ marginTop: 12, fontSize: 13, opacity: 0.9 }}>
-            Tip: Click “Run solvers”, then move the hour slider to see wind rotating E → S → W with spatial variation.
+            Tip: Click “Run solvers”, then move the hour slider to see wind rotating
+            E → S → W with spatial variation.
           </div>
         </div>
       </div>
